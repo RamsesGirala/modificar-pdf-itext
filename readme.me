@@ -1,0 +1,50 @@
+# Requisitos
+
+Para ejecutar este proyecto, necesitarás tener instalado lo siguiente en tu sistema:
+
+### Java
+
+Este proyecto está desarrollado con Java 17. Puedes descargarlo desde la [página oficial de Oracle](https://www.oracle.com/java/technologies/javase-jdk17-downloads.html) o instalarlo a través de un gestor de paquetes como [SDKMAN!](https://sdkman.io/) o [Homebrew](https://brew.sh/) si estás en macOS.
+
+### Gradle
+
+Este proyecto utiliza Gradle 8.6 como sistema de construcción. Necesitarás tenerlo instalado en tu sistema para poder compilar y ejecutar el proyecto. Puedes descargarlo desde la [página oficial de Gradle](https://gradle.org/install/) o instalarlo a través de un gestor de paquetes.
+
+# Modificación de Documentos PDF con Spring e iText
+
+Este proyecto proporciona dos métodos para modificar documentos PDF. Ambos métodos leen un documento PDF de la carpeta `originales` dentro de `resources/static`, realizan modificaciones y luego guardan el documento modificado en la carpeta `modificados` dentro de `resources/static`. El nombre del documento modificado se mantiene igual que el original, pero se le agrega un número aleatorio entre 0 y 110 al final.
+
+## Método 1: Agregar una imagen al final del PDF
+
+El primer método se expone a través de la ruta `/modificarDocumento/{nombreDocumento}`. Este método agrega una imagen al final del documento PDF. La imagen se llama `imagenDemo.png` y se encuentra en la carpeta `resources/static`.
+
+```java
+@GetMapping("/modificarDocumento/{nombreDocumento}")
+public ResponseEntity<String> modificarDocumento(@PathVariable String nombreDocumento){
+    try {
+        var rutaModificada = pdfService.modificarDocumento(nombreDocumento);
+        return ResponseEntity.ok().body("Documento modificado con éxito y guardado en: " + rutaModificada);
+    } catch (Exception e) {
+        return ResponseEntity.badRequest().body("Error al modificar el documento: " + e.getMessage());
+    }
+}
+```
+
+## Método 2: Convertir a PDF/A y agregar una imagen
+
+El segundo método se expone a través de la ruta `/modificarDocumentoPDFA/{nombreDocumento}`. Este método convierte el documento PDF a formato PDF/A, y luego agrega una imagen al final del documento. La imagen se llama `imagenDemo.png` y se encuentra en la carpeta `resources/static`.
+
+```java
+@GetMapping("/modificarDocumentoPDFA/{nombreDocumento}")
+public ResponseEntity<String> modificarDocumentoPDFA(@PathVariable String nombreDocumento){
+    try {
+        var rutaModificada = pdfService.modificarDocumentoFormatoPdfA(nombreDocumento);
+        return ResponseEntity.ok().body("Documento modificado en formato PDF/A con éxito y guardado en: " + rutaModificada);
+    } catch (Exception e) {
+        return ResponseEntity.badRequest().body("Error al modificar el documento, no se pudo convertir en formato PDF/A: " + e.getMessage());
+    }
+}
+```
+
+Ambos métodos devuelven la ruta del documento modificado si la operación es exitosa, o un mensaje de error si ocurre un problema. Para utilizar estos métodos, simplemente reemplace `{nombreDocumento}` en la ruta con el nombre del documento PDF que desea modificar (sin la extensión `.pdf`).
+
